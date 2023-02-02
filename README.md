@@ -13,5 +13,5 @@ rPPG signal processing
 下面是直接使用官方程式碼做測試
 ![20230201MediaPipe](https://user-images.githubusercontent.com/124028666/215977076-c555d452-f077-4900-a6f5-45e2a3599d26.png)
 ### 20230202 
-contours.py
+contours.py 利用灰階與二值化來分割，不確定 訊號會不會有問題 及 仍可能會有沒消除乾淨的 
 ![image](https://user-images.githubusercontent.com/124028666/216247004-8ca3e855-294d-46cc-bef3-0263bffdb39e.png)
