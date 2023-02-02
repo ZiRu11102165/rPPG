@@ -12,3 +12,6 @@ rPPG signal processing
 ![](https://raw.githubusercontent.com/google/mediapipe/master/mediapipe/modules/face_geometry/data/canonical_face_model_uv_visualization.png)
 下面是直接使用官方程式碼做測試
 ![20230201MediaPipe](https://user-images.githubusercontent.com/124028666/215977076-c555d452-f077-4900-a6f5-45e2a3599d26.png)
+### 20230202 
+contours.py
+![image](https://user-images.githubusercontent.com/124028666/216247004-8ca3e855-294d-46cc-bef3-0263bffdb39e.png)
