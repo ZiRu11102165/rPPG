@@ -1,5 +1,6 @@
 import cv2
 import numpy as np 
+import pandas as pd
 import mediapipe as mp
 import os
 import glob
@@ -30,6 +31,9 @@ def Detect_face(camera_idx):
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5) as face_mesh:
     while cap.isOpened():
+      if (cap.isOpened()== False): 
+        print("video record done or error")
+      
       success, image = cap.read()
 
       image = cv2.flip(image, 0) # 上下垂直翻轉
@@ -51,49 +55,48 @@ def Detect_face(camera_idx):
       image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
       if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
-        #   mp_drawing.draw_landmarks(
-        #       image=image,
-        #       landmark_list=face_landmarks,
-        #       connections=mp_face_mesh.FACEMESH_TESSELATION,
-        #       landmark_drawing_spec=None,
-        #       connection_drawing_spec=mp_drawing_styles
-        #       .get_default_face_mesh_tesselation_style())
-          hx0  =int(results.multi_face_landmarks[0].landmark[66].x * 1280)
-          hy0  =int(results.multi_face_landmarks[0].landmark[66].y * 720*0.95)
+          mp_drawing.draw_landmarks(
+              image=image0,
+              landmark_list=face_landmarks,
+              connections=mp_face_mesh.FACEMESH_TESSELATION,
+              landmark_drawing_spec=None,
+              connection_drawing_spec=mp_drawing_styles
+              .get_default_face_mesh_tesselation_style())
+          
           hx1  =int(results.multi_face_landmarks[0].landmark[109].x * 1280)
           hy1  =int(results.multi_face_landmarks[0].landmark[109].y * 720)
-          hx2  =int(results.multi_face_landmarks[0].landmark[296].x * 1280) #66x,109y:296x,66y
-          hy2  =int(results.multi_face_landmarks[0].landmark[296].y * 720)
+          hx2  =int(results.multi_face_landmarks[0].landmark[336].x * 1280) #66x,109y:296x,66y
+          hy2  =int(results.multi_face_landmarks[0].landmark[336].y * 720)
           
           rfx1 =int(results.multi_face_landmarks[0].landmark[116].x * 1280)
           rfy1 =int(results.multi_face_landmarks[0].landmark[116].y * 720)
           rfx2 =int(results.multi_face_landmarks[0].landmark[36].x * 1280)
           rfy2 =int(results.multi_face_landmarks[0].landmark[36].y * 720)
 
-          lfx1 =int(results.multi_face_landmarks[0].landmark[345].x * 1280)
-          lfy1 =int(results.multi_face_landmarks[0].landmark[345].y * 720)
-          lfx2 =int(results.multi_face_landmarks[0].landmark[266].x * 1280)
-          lfy2 =int(results.multi_face_landmarks[0].landmark[266].y * 720)
+          # lfx1 =int(results.multi_face_landmarks[0].landmark[345].x * 1280)
+          # lfy1 =int(results.multi_face_landmarks[0].landmark[345].y * 720)
+          # lfx2 =int(results.multi_face_landmarks[0].landmark[266].x * 1280)
+          # lfy2 =int(results.multi_face_landmarks[0].landmark[266].y * 720)
 
-          nx1 =int(results.multi_face_landmarks[0].landmark[47].x * 1280)
-          ny1 =int(results.multi_face_landmarks[0].landmark[47].y * 720)
-          nx2 =int(results.multi_face_landmarks[0].landmark[327].x * 1280)
-          ny2 =int(results.multi_face_landmarks[0].landmark[327].y * 720)
+          # nx1 =int(results.multi_face_landmarks[0].landmark[47].x * 1280)
+          # ny1 =int(results.multi_face_landmarks[0].landmark[47].y * 720)
+          # nx2 =int(results.multi_face_landmarks[0].landmark[327].x * 1280)
+          # ny2 =int(results.multi_face_landmarks[0].landmark[327].y * 720)
           
           #y1,y2,x1,x2座標
-          h_out  = 'H:y1,y2,x1,x2 =', hy1 ,  hy0,  hx0,  hx2
+          h_out  = 'H:y1,y2,x1,x2 =', hy1 ,  hy2,  hx1,  hx2
           rf_out = 'RF:y1,y2,x1,x2=', rfy1, rfy2, rfx1, rfx2
-          lf_out = 'LF:y1,y2,x1,x2=', lfy1, lfy2, lfx1, lfx2
-          n_out  = 'N:y1,y2,x1,x2 =', ny1 ,  ny2,  nx1,  nx2
+          # lf_out = 'LF:y1,y2,x1,x2=', lfy1, lfy2, lfx1, lfx2
+          # n_out  = 'N:y1,y2,x1,x2 =', ny1 ,  ny2,  nx1,  nx2
           print(h_out)
-          print(rf_out)
-          print(lf_out)
-          print(n_out)
+          # print(rf_out)
+          # print(lf_out)
+          # print(n_out)
           #用來確定框的範圍
-          cv2.rectangle(image0, [hx0,hy1], [hx2,hy0], (255, 0, 0), 2)
+          cv2.rectangle(image0, [hx1,hy1], [hx2,hy2], (255, 0, 0), 2)
           cv2.rectangle(image0, [rfx1,rfy1], [rfx2,rfy2], (255, 0, 0), 2)
-          cv2.rectangle(image0, [lfx1,lfy2], [lfx2,lfy1], (255, 0, 0), 2)
-          cv2.rectangle(image0, [nx1,ny1], [nx2,ny2], (255, 0, 0), 2)        
+          #cv2.rectangle(image0, [lfx1,lfy2], [lfx2,lfy1], (255, 0, 0), 2)
+          #cv2.rectangle(image0, [nx1,ny1], [nx2,ny2], (255, 0, 0), 2)        
 
       # Flip the image horizontally for a selfie-view display.
       cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
@@ -101,17 +104,30 @@ def Detect_face(camera_idx):
       ret,thresh = cv2.threshold(image_g,127,255,cv2.THRESH_BINARY)
       #cv2.imshow('1',cv2.flip(thresh, 1))
       masked = cv2.bitwise_and(image,image,mask=thresh)
-      cv2.imshow('2',cv2.flip(masked, 1))
+      #cv2.imshow('2',cv2.flip(masked, 1))
       
-      cv2.imshow('Forehead',cv2.flip(masked[hy1:hy0,hx0:hx2],1))
+      cv2.imshow('Forehead',cv2.flip(masked[hy1:hy2,hx1:hx2],1))
       cv2.imshow('right face',cv2.flip(masked[rfy1:rfy2,rfx1:rfx2],1))
-      cv2.imshow('left face',cv2.flip(masked[lfy1:lfy2,lfx2:lfx1],1))
-      cv2.imshow('nose',cv2.flip(masked[ny1:ny2,nx1:nx2],1))
+      #cv2.imshow('left face',cv2.flip(masked[lfy1:lfy2,lfx2:lfx1],1))
+      #cv2.imshow('nose',cv2.flip(masked[ny1:ny2,nx1:nx2],1))
 
       cv2.imshow('1',cv2.flip(image0, 1))
 
+      rgb_frame_h_g = cv2.split(cv2.flip(masked[hy1:hy2,hx1:hx2],1))[1]
+      rgb_frame_rf_g = cv2.split(cv2.flip(masked[rfy1:rfy2,rfx1:rfx2],1))[1]
+      # rgb_frame_lf_g = cv2.split(cv2.flip(masked[lfy1:lfy2,lfx2:lfx1],1))[1]
+      # rgb_frame_n_g = cv2.split(cv2.flip(masked[ny1:ny2,nx1:nx2],1))[1]
+      print(type((rgb_frame_h_g)))
+      # print(rgb_frame_rf_g)
+      # print(rgb_frame_lf_g)
+      # print(rgb_frame_n_g)
+      np.savetxt(who+"rgb_frame_h_g.csv",rgb_frame_h_g,delimiter=",")
+
       if cv2.waitKey(5) & 0xFF == 27:
-        break
+        break 
+
+        
 
 if __name__=='__main__':
   Detect_face(video_addr)
+  
