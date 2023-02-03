@@ -12,7 +12,7 @@ mp_face_mesh = mp.solutions.face_mesh
 0105_long     0105_yee    0105_zizu   0106_brian  0106_chi      0106_sunny
 '''
 #load檔案
-who = '0105_cin'
+who = '0104_shints'
 pose = 'Front' #Front or Side
 addr_file = 'D:/dataset/light/'+who+'/'+who+'/'+pose+'/RGB_60FPS_MJPG/'
 dirs = os.listdir(addr_file)
@@ -42,6 +42,7 @@ def Detect_face(camera_idx):
       # pass by reference.
       image.flags.writeable = False
       image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+      image0 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
       image_g = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
       results = face_mesh.process(image)
 
@@ -50,13 +51,13 @@ def Detect_face(camera_idx):
       image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
       if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
-          # mp_drawing.draw_landmarks(
-          #     image=image,
-          #     landmark_list=face_landmarks,
-          #     connections=mp_face_mesh.FACEMESH_TESSELATION,
-          #     landmark_drawing_spec=None,
-          #     connection_drawing_spec=mp_drawing_styles
-          #     .get_default_face_mesh_tesselation_style())
+        #   mp_drawing.draw_landmarks(
+        #       image=image,
+        #       landmark_list=face_landmarks,
+        #       connections=mp_face_mesh.FACEMESH_TESSELATION,
+        #       landmark_drawing_spec=None,
+        #       connection_drawing_spec=mp_drawing_styles
+        #       .get_default_face_mesh_tesselation_style())
           hx0  =int(results.multi_face_landmarks[0].landmark[66].x * 1280)
           hy0  =int(results.multi_face_landmarks[0].landmark[66].y * 720*0.95)
           hx1  =int(results.multi_face_landmarks[0].landmark[109].x * 1280)
@@ -88,11 +89,11 @@ def Detect_face(camera_idx):
           print(rf_out)
           print(lf_out)
           print(n_out)
-        #   #用來確定框的範圍
-        #   cv2.rectangle(image, [hx0,hy1], [hx2,hy0], (255, 0, 0), 2)
-        #   cv2.rectangle(image, [rfx1,rfy1], [rfx2,rfy2], (255, 0, 0), 2)
-        #   cv2.rectangle(image, [lfx1,lfy2], [lfx2,lfy1], (255, 0, 0), 2)
-        #   cv2.rectangle(image, [nx1,ny1], [nx2,ny2], (255, 0, 0), 2)        
+          #用來確定框的範圍
+          cv2.rectangle(image0, [hx0,hy1], [hx2,hy0], (255, 0, 0), 2)
+          cv2.rectangle(image0, [rfx1,rfy1], [rfx2,rfy2], (255, 0, 0), 2)
+          cv2.rectangle(image0, [lfx1,lfy2], [lfx2,lfy1], (255, 0, 0), 2)
+          cv2.rectangle(image0, [nx1,ny1], [nx2,ny2], (255, 0, 0), 2)        
 
       # Flip the image horizontally for a selfie-view display.
       cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
@@ -101,11 +102,13 @@ def Detect_face(camera_idx):
       #cv2.imshow('1',cv2.flip(thresh, 1))
       masked = cv2.bitwise_and(image,image,mask=thresh)
       cv2.imshow('2',cv2.flip(masked, 1))
+      
+      cv2.imshow('Forehead',cv2.flip(masked[hy1:hy0,hx0:hx2],1))
+      cv2.imshow('right face',cv2.flip(masked[rfy1:rfy2,rfx1:rfx2],1))
+      cv2.imshow('left face',cv2.flip(masked[lfy1:lfy2,lfx2:lfx1],1))
+      cv2.imshow('nose',cv2.flip(masked[ny1:ny2,nx1:nx2],1))
 
-      cv2.imshow('Forehead',masked[hy1:hy0,hx0:hx2])
-      cv2.imshow('right face',masked[rfy1:rfy2,rfx1:rfx2])
-      cv2.imshow('left face',masked[lfy1:lfy2,lfx2:lfx1])
-      cv2.imshow('nose',masked[ny1:ny2,nx1:nx2])
+      cv2.imshow('1',cv2.flip(image0, 1))
 
       if cv2.waitKey(5) & 0xFF == 27:
         break
