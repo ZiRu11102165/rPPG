@@ -17,8 +17,10 @@ contours.py 利用灰階與二值化來分割，不確定 訊號會不會有問�
 ![image](https://user-images.githubusercontent.com/124028666/216247004-8ca3e855-294d-46cc-bef3-0263bffdb39e.png)
 ![image](https://user-images.githubusercontent.com/124028666/216502841-c2cc3e98-1bca-420d-898e-c51d19ceddb1.png)
 
+## model
 ### 20230207
 model 
 Bi_LSTM (+ attention) complete/None
+
 ![image](https://user-images.githubusercontent.com/124028666/217289423-39cf2633-7f0b-4264-a8f9-6e9dbbc10c91.png)
 Bi_GRU  (+ attention)  None/None
