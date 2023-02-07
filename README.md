@@ -23,4 +23,5 @@ model
 Bi_LSTM (+ attention) complete/None
 
 ![image](https://user-images.githubusercontent.com/124028666/217289423-39cf2633-7f0b-4264-a8f9-6e9dbbc10c91.png)
+
 Bi_GRU  (+ attention)  None/None
