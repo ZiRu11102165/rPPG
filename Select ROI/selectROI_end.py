@@ -3,17 +3,18 @@ import numpy as np
 import pandas as pd
 import mediapipe as mp
 import os
-import glob
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
+
 '''
 0104_shints   0105_cin    0105_hsp    0105_jeff   0105_jihong
 0105_long     0105_yee    0105_zizu   0106_brian  0106_chi      0106_sunny
 '''
 #load檔案
-who = '0104_shints'
+who = '0106_brian'
 pose = 'Front' #Front or Side
 addr_file = 'D:/dataset/light/'+who+'/'+who+'/'+pose+'/RGB_60FPS_MJPG/'
 dirs = os.listdir(addr_file)
@@ -23,12 +24,13 @@ for name in dirs:
 video_addr = addr_file+avi_name
 cap = cv2.VideoCapture(video_addr)
 
-def Detect_face(camera_idx):
+def Detect_face(in_addr):
   with mp_face_mesh.FaceMesh(
       max_num_faces=1,
       refine_landmarks=True,
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5) as face_mesh:
+    cap = cv2.VideoCapture(in_addr)
     while cap.isOpened():
       if (cap.isOpened()== False): 
         print("video record done or error")
@@ -46,14 +48,14 @@ def Detect_face(camera_idx):
       image.flags.writeable = False
       image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
       image0 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-      image_g = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
       im = np.zeros(image0.shape[:2],dtype = "uint8")
       results = face_mesh.process(image)
 
       # Draw the face mesh annotations on the image.
       image.flags.writeable = True
       image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-      if results.multi_face_landmarks:
+      
+      if results.multi_face_landmarks :
           hx1 =int(results.multi_face_landmarks[0].landmark[109].x * 1280)
           hy1 =int(results.multi_face_landmarks[0].landmark[109].y * 720)
           hx2 =int(results.multi_face_landmarks[0].landmark[338].x * 1280)
@@ -96,35 +98,38 @@ def Detect_face(camera_idx):
           nx5 =int(results.multi_face_landmarks[0].landmark[49].x * 1280)
           ny5 =int(results.multi_face_landmarks[0].landmark[49].y * 720)
           points3 = np.array([[nx1, ny1], [nx2, ny2],[nx3, ny3], [nx4, ny4], [nx5, ny5]], np.int32)#多邊形的點
+          out=[hy1,hy3,hx4,hx3,rfy2,rfy4,rfx1,rfx3,lfy1,lfy4,lfx5,lfx2,ny1,ny3,nx1,nx3]
+          
+      #out=[hy1,hy3,hx4,hx3,rfy2,rfy4,rfx1,rfx3,lfy1,lfy4,lfx5,lfx2,ny1,ny3,nx1,nx3]
       
 
       # Flip the image horizontally for a selfie-view display.
-      cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
-      cv2.polylines(image0, pts=[points0], isClosed=True, color=(0,255,0),thickness=3) #畫多邊形
-      cv2.polylines(image0, pts=[points1], isClosed=True, color=(0,255,0),thickness=3) #畫多邊形
-      cv2.polylines(image0, pts=[points2], isClosed=True, color=(0,255,0),thickness=3) #畫多邊形
-      cv2.polylines(image0, pts=[points3], isClosed=True, color=(0,255,0),thickness=3) #畫多邊形
-      mask = im
+      # cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
+      
       cv2.fillPoly(im, pts=[points0],color=(255,255,255))
       cv2.fillPoly(im, pts=[points1],color=(255,255,255))
       cv2.fillPoly(im, pts=[points2],color=(255,255,255))
       cv2.fillPoly(im, pts=[points3],color=(255,255,255))
       masked = cv2.bitwise_and(image,image,mask=im)
-      cv2.imshow("mask",cv2.flip(masked, 1))
+      # cv2.imshow("mask",cv2.flip(masked, 1))
 
-      cv2.imshow('Forehead',cv2.flip(masked[ny1:ny3,nx1:nx3],1))       # 114x,114y,279x,279y
-      cv2.imshow('right face',cv2.flip(masked[rfy2:rfy4,rfx1:rfx3],1)) # rfx1,rfy2,rfx3,rfy4
-      cv2.imshow('left face',cv2.flip(masked[lfy1:lfy4,lfx5:lfx2],1))  # lfx5,lfy1,lfx2,lfy4
-      cv2.imshow('nose',cv2.flip(masked[hy1:hy3,hx4:hx3],1))           # 66x,109y,296x,296y
+            
+    #   cv2.imshow('Forehead',cv2.flip(mask[hy1:hy2,hx1:hx2],1))
+      # cv2.imshow('Forehead',cv2.flip(masked[ny1:ny3,nx1:nx3],1))       # 114x,114y,279x,279y
+      # cv2.imshow('right face',cv2.flip(masked[rfy2:rfy4,rfx1:rfx3],1)) # rfx1,rfy2,rfx3,rfy4
+      # cv2.imshow('left face',cv2.flip(masked[lfy1:lfy4,lfx5:lfx2],1))  # lfx5,lfy1,lfx2,lfy4
+      # cv2.imshow('nose',cv2.flip(masked[hy1:hy3,hx4:hx3],1))           # 66x,109y,296x,296y
 
-      rgb_frame_h_g = cv2.split(cv2.flip(masked[ny1:ny3,nx1:nx3],1))[1]         # 額頭G通道
-      rgb_frame_rf_g = cv2.split(cv2.flip(masked[rfy2:rfy4,rfx1:rfx3],1))[1]    # 右臉頰G通道
-      rgb_frame_n_g = cv2.split(cv2.flip(masked[hy1:hy3,hx4:hx3],1))[1]         # 鼻子G通道
-      rgb_frame_lf_g = cv2.split(cv2.flip(masked[lfy1:lfy4,lfx5:lfx2],1))[1]    # 左臉頰G通道
+      Bh,Gh,Rh = cv2.split(cv2.flip(masked[ny1:ny3,nx1:nx3],1))          # 額頭G通道
+      Brf,Grf,Rrf = cv2.split(cv2.flip(masked[rfy2:rfy4,rfx1:rfx3],1))   # 右臉頰G通道
+      Bn,Gn,Rn = cv2.split(cv2.flip(masked[hy1:hy3,hx4:hx3],1))          # 鼻子G通道
+      Blf,Glf,Rlf = cv2.split(cv2.flip(masked[lfy1:lfy4,lfx5:lfx2],1))   # 左臉頰G通道
 
       if cv2.waitKey(5) & 0xFF == 27:
         break 
-
-if __name__=='__main__':
-  Detect_face(video_addr)
+      print(out)
+      return out
+      
+# if __name__=='__main__':
+#   Detect_face(video_addr)
   
