@@ -55,7 +55,7 @@ peaks=[]
 0105_long     0105_yee    0105_zizu   0106_brian  0106_chi      0106_sunny
 '''
 #load檔案
-who = '0106_brian'
+who = '0106_sunny'
 pose = 'Front' #Front or Side
 addr_file = 'D:/dataset/light/'+who+'/'+who+'/'+pose+'/RGB_60FPS_MJPG/'
 dirs = os.listdir(addr_file)
@@ -71,8 +71,7 @@ cap = cv2.VideoCapture(video_addr)
 # plt.ion()
 plt.figure(figsize=(20,10))#會產生視窗所以要擺迴圈外
 def OutputCSV():   
-
-    Result = (r'C:\re_pos_shints_head.csv')
+    Result = ('D:/dataset/datasetcsv/'+who+'_Forehead.csv')
 
     df_SAMPLE = pd.DataFrame.from_dict( meanlist )
     df_SAMPLE.to_csv( Result  , index=False )
@@ -107,10 +106,10 @@ while 1:
         # Bh_list[1:]=Bh_list[:-1]#??????????????????????????
         # Bh_list[0]=Rh.sum()/(np.count_nonzero(Rh)+1)#?????????????????????????????
         
-    Bh,Gh,Rh = cv2.split(vid[roi_out[0]:roi_out[1],roi_out[2]:roi_out[3]])#cv2.split:將圖片猜成三個通道
+    Bh,Gh,Rh = cv2.split(vid[roi_out[0]:roi_out[1],roi_out[2]:roi_out[3]])#cv2.split:將圖片猜成三個通道  額頭
     # Bf,Gf,Rf = cv2.split(vid[284:324,818:888])
     # Bh,Gh,Rh = cv2.split(vid[400:500,700:850])#cv2.split:將圖片猜成三個通道
-    Bf,Gf,Rf = cv2.split(vid[roi_out[4]:roi_out[5],roi_out[6]:roi_out[7]])
+    Bf,Gf,Rf = cv2.split(vid[roi_out[4]:roi_out[5],roi_out[6]:roi_out[7]])# 右臉頰
     Bh_list.append(np.mean(Bh))
     Bf_list.append(np.mean(Bf))
     Gh_list.append(np.mean(Gh))
@@ -198,7 +197,7 @@ while 1:
                 plt.plot(i,meanlist[i] , "x", markersize=10,color='r')
             
         # --------------------------------產出CSV檔-----------------------------------------
-            # OutputCSV()
+            OutputCSV()
             
             # print (psealphalist_mean)
             plt.plot(meanlist)
