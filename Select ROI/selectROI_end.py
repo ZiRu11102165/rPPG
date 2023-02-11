@@ -1,3 +1,4 @@
+#######只輸出一次座標的########
 import cv2
 import numpy as np 
 import pandas as pd
