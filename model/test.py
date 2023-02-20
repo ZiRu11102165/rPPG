@@ -1,4 +1,4 @@
-# 第一個(Epoch:50 , loss: 9.0821 - mae: 2.2701)
+# 第一個(Epoch:10 , loss: 92.1224 - RMSE: 9.5980)
 def Model():
     model = Sequential()
     model.add(Conv1D(filters=20,kernel_size=9,strides=1,input_shape=(250,1),padding="SAME",activation = 'relu'))  # filters空間維度,kernel_size卷積窗口的長度,strides卷積的步長,
@@ -28,25 +28,7 @@ record = model.fit( X_train, Y_train,validation_data=(x_test,y_test),batch_size=
 # 第一個
 
 # 第二個
-def Model():
-    model = Sequential()
-    model.add(Conv1D(filters=20,kernel_size=9,strides=1,input_shape=(250,1),padding="SAME",activation = 'relu'))  # filters空間維度,kernel_size卷積窗口的長度,strides卷積的步長,
-    model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=4,padding="SAME"))   #pool_size窗口大小,strides縮小比例的因數,padding: "valid" 或者 "same"
-    model.add(Dropout(rate =0.1))
-    model.add(Conv1D(filters=20,kernel_size=9,strides=1,padding="SAME",activation = 'relu'))  # filters空間維度,kernel_size卷積窗口的長度,strides卷積的步長,
-    model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=4,padding="SAME"))   #pool_size窗口大小,strides縮小比例的因數,padding: "valid" 或者 "same"
-    model.add(Dropout(rate =0.1))
-    
-    model.add(Bidirectional(ConvLSTM1D(64, return_sequences=True)))
-    model.add(Dropout(rate=0.1))
-    model.add(Bidirectional(ConvLSTM1D(128)))
-    model.add(Dropout(rate=0.1))
-    model.add(Flatten())
-    model.add(Dense(2, activation='relu'))
-    return model
-model = Model()
+
 # 第二個
 
 # 第三個
