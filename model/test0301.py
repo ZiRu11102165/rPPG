@@ -52,7 +52,7 @@ Y_train_s = Y_train.shape[0]
 r = X_train_s/Y_train_s
 
 Y_train = np.array([val for val in Y_train for _ in range(int(r))])
-print(X_train.shape)
+print(Y_train.shape)
 print(Y_train.shape)
 
 gpu_devices = tf.config.experimental.list_physical_devices("GPU")
@@ -72,9 +72,9 @@ def Model():
     model.add(MaxPooling1D(pool_size=4,padding="SAME"))   #pool_size窗口  大小,strides縮小比例的因數,padding: "valid" 或者 "same"
     model.add(Dropout(rate =0.0))
     
-    model.add(Bidirectional(GRU(64, return_sequences=True)))
+    model.add(Bidirectional(LSTM(64, return_sequences=True)))
     model.add(Dropout(rate=0.0))
-    model.add(Bidirectional(GRU(128)))
+    model.add(Bidirectional(LSTM(128)))
     model.add(Dropout(rate=0.0))
     model.add(Flatten())
     model.add(Dense(2, activation='relu'))
@@ -82,20 +82,20 @@ def Model():
 model = Model()
 model.summary()
 
-opt = tf.keras.optimizers.AdamW(learning_rate=0.001) 
+opt = tf.keras.optimizers.AdamW(learning_rate=0.0001) 
 # adam with weight decay (adamW)
 # use scheduler
 # adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
 
-# def scheduler(epoch):  #scheduler用
-#     lr = K.get_value(model.optimizer.lr)
-#     if epoch<10:
-#         lr=lr
-#     elif epoch % 10 ==0:
-#         lr *= 0.1
-#     return lr
+def scheduler(epoch):  #scheduler用
+    lr = K.get_value(model.optimizer.lr)
+    if epoch<15:
+        lr=lr
+    elif epoch % 15 ==0:
+        lr *= 0.5
+    return lr
 
-# learning_rate_re = keras.callbacks.LearningRateScheduler(scheduler)  #scheduler用
+learning_rate_re = keras.callbacks.LearningRateScheduler(scheduler)  #scheduler用
 
 model.compile(loss='mean_absolute_error',
 				optimizer=opt,
@@ -103,7 +103,7 @@ model.compile(loss='mean_absolute_error',
 
 # (Do!) 自訂 batch_size, epochs限制= 20
 batch_size = 128#128
-epochs = 50
+epochs = 100
 seed = 7
 X_train, x_test, Y_train, y_test = train_test_split(X_train, Y_train, test_size=0.33, random_state=seed)
 record = model.fit( X_train, Y_train,
@@ -112,11 +112,14 @@ record = model.fit( X_train, Y_train,
 					epochs=epochs,
 					verbose=1,
 					shuffle=True,
-                    # callbacks = [learning_rate_re],  #scheduler用
+                    callbacks = [learning_rate_re,
+                                 tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, mode='min', restore_best_weights=True,)],  #scheduler用
 					)	
 
 scores = model.evaluate(x=x_test,y=y_test,)
 print(scores[0])
+
+model.save('./model_save/keras_model_CNNBiLSTM.h5')
 
 plt.plot(record.history['loss'], label='train loss')
 plt.plot(record.history['val_loss'], label='val loss')
