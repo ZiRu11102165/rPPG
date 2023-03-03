@@ -1,3 +1,9 @@
+###########################
+# 
+# loss(MAE): 11.6722
+# root_mean_squared_error: 15.2903
+# 
+###########################
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import numpy as np
