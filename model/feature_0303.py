@@ -1,5 +1,5 @@
 ###########################
-# 
+# Epoch 16/100
 # loss(MAE): 11.6722
 # root_mean_squared_error: 15.2903
 # 
