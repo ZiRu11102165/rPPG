@@ -1,7 +1,8 @@
 ###########################
-# Epoch /100
-# loss(MAE): 
-# root_mean_squared_error: 
+# 
+# Epoch 72/100
+# loss(MAE): 8.4853
+# root_mean_squared_error: 13.2028
 # 
 ###########################
 
