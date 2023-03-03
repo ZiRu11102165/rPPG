@@ -1,3 +1,10 @@
+###########################
+# Epoch /100
+# loss(MAE): 
+# root_mean_squared_error: 
+# 
+###########################
+
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import numpy as np
