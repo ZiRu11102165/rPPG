@@ -11,6 +11,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 from tensorflow.keras.losses import *
 from tensorflow.keras.regularizers import l2
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 from sklearn.model_selection import train_test_split
 from keras import backend as K
@@ -59,7 +60,7 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 # model start
 
-def residual_block(x, filters, stride=1, l2_reg=0.01):
+def residual_block(x, filters, stride=1, l2_reg=0.001):
     shortcut = x
     x = Dense(filters, kernel_regularizer=l2(l2_reg))(x)
     x = BatchNormalization()(x)
@@ -72,20 +73,21 @@ def residual_block(x, filters, stride=1, l2_reg=0.01):
         shortcut = Activation('relu')(shortcut)
     x = Activation('relu')(x + shortcut)
     return x
-def fully_connected_resnet(input_shape, num_classes, num_blocks, filters, l2_reg=0.01):
+def fully_connected_resnet(input_shape, num_classes, num_blocks, filters, l2_reg=0.001):
     inputs = Input(shape=input_shape)
     x = inputs
     for i in range(num_blocks):
         x = residual_block(x, filters, stride=1, l2_reg=l2_reg)
-    x = Dense(num_classes, activation='relu', kernel_regularizer=l2(l2_reg))(x)
+    x = Dense(64, activation='relu', kernel_regularizer=l2(l2_reg))(x)
     x = BatchNormalization()(x)
+    x = Dense(num_classes, activation='relu', kernel_regularizer=l2(l2_reg))(x)
     model = Model(inputs=inputs, outputs=x)
     return model
 
 input_shape = (1,)
 num_classes = 2
-num_blocks = 3
-filters = 64
+num_blocks = 32
+filters = 64 #64
 l2_reg = 0.01
 
 model = fully_connected_resnet(input_shape, num_classes, num_blocks, filters, l2_reg)
@@ -100,11 +102,13 @@ def scheduler(epoch):  #scheduler用
         lr=lr
     elif epoch % 15 ==0:
         lr *= 0.5
+        # lr = lr * tf.math.exp(-0.1)
     return lr
+
 learning_rate_re = keras.callbacks.LearningRateScheduler(scheduler)  #scheduler用
 
-record = model.fit(X_train, Y_train, batch_size=128, epochs=100, validation_data=(x_test, y_test),callbacks = [learning_rate_re,
-                                                                                                            #   tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode='min', restore_best_weights=True,)
+record = model.fit(X_train, Y_train, batch_size=32, epochs=1000, validation_data=(x_test, y_test),callbacks = [learning_rate_re,
+                                                                                                              tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode='min', restore_best_weights=True,)
                                                                                                               ],
                    )
 scores = model.evaluate(x=x_test,y=y_test,)
