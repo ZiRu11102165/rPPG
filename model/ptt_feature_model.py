@@ -53,7 +53,7 @@ Y_train = np.array(Y_train)
 
 print(X_train.shape)
 print(Y_train.shape)
-X_train, x_test, Y_train, y_test = train_test_split(X_train, Y_train, test_size=0.33, random_state=42)
+X_train, x_test, Y_train, y_test = train_test_split(X_train, Y_train, test_size=0.33, random_state=50)
 
 gpu_devices = tf.config.experimental.list_physical_devices("GPU")
 for device in gpu_devices:
@@ -63,31 +63,27 @@ for device in gpu_devices:
 def residual_block(x, filters, stride=1, l2_reg=0.001):
     shortcut = x
     x = Dense(filters, kernel_regularizer=l2(l2_reg))(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = Dense(filters, kernel_regularizer=l2(l2_reg))(x)
-    x = BatchNormalization()(x)
+    x = Activation('elu')(x)
     if stride > 1:
         shortcut = Dense(filters, kernel_regularizer=l2(l2_reg))(shortcut)
-        shortcut = BatchNormalization()(shortcut)
-        shortcut = Activation('relu')(shortcut)
-    x = Activation('relu')(x + shortcut)
+        shortcut = Activation('elu')(shortcut)
+    x = Activation('elu')(x + shortcut)
     return x
 def fully_connected_resnet(input_shape, num_classes, num_blocks, filters, l2_reg=0.001):
     inputs = Input(shape=input_shape)
     x = inputs
+    x = Dense(128, activation='elu')(x)
+    x = BatchNormalization()(x)
     for i in range(num_blocks):
         x = residual_block(x, filters, stride=1, l2_reg=l2_reg)
-    x = Dense(64, activation='relu', kernel_regularizer=l2(l2_reg))(x)
-    x = BatchNormalization()(x)
-    x = Dense(num_classes, activation='relu', kernel_regularizer=l2(l2_reg))(x)
+    x = Dense(num_classes, activation='relu')(x)
     model = Model(inputs=inputs, outputs=x)
     return model
 
 input_shape = (1,)
 num_classes = 2
-num_blocks = 32
-filters = 64 #64
+num_blocks = 5
+filters = 128 #64
 l2_reg = 0.01
 
 model = fully_connected_resnet(input_shape, num_classes, num_blocks, filters, l2_reg)
@@ -107,9 +103,8 @@ def scheduler(epoch):  #scheduler用
 
 learning_rate_re = keras.callbacks.LearningRateScheduler(scheduler)  #scheduler用
 
-record = model.fit(X_train, Y_train, batch_size=32, epochs=1000, validation_data=(x_test, y_test),callbacks = [learning_rate_re,
-                                                                                                              tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode='min', restore_best_weights=True,)
-                                                                                                              ],
+record = model.fit(X_train, Y_train, batch_size=128, epochs=100, validation_data=(x_test, y_test),callbacks = [learning_rate_re,
+                                                                                                              tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, mode='min', restore_best_weights=True,)],
                    )
 scores = model.evaluate(x=x_test,y=y_test,)
 print(scores[0])
@@ -123,3 +118,5 @@ plt.ylabel("Loss")
 plt.legend()
 plt.savefig('model_feature.png',dpi=300,format='png')
 print('Result saved into model.png')
+
+print()
