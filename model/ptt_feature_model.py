@@ -118,5 +118,3 @@ plt.ylabel("Loss")
 plt.legend()
 plt.savefig('model_feature.png',dpi=300,format='png')
 print('Result saved into model.png')
-
-print()
