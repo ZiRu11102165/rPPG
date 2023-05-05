@@ -21,12 +21,16 @@ def save_img(name):
     rval=vc.isOpened()
 
     while rval:  
-        c = c + 1
-        rval, frame = vc.read()
-        pic_path = './our60to10/'
-        if rval:
-            cv2.imwrite(pic_path + str(c) + '.jpg', frame)
-            cv2.waitKey(1)
+        if c<3601:
+            c = c + 1
+            print(c)
+            rval, frame = vc.read()
+            pic_path = './our60to10/'+name+'/'
+            if rval:
+                cv2.imwrite(pic_path + str(c) + '.jpg', frame)
+                cv2.waitKey(1)
+            else:
+                break
         else:
             break
     vc.release()
@@ -38,6 +42,8 @@ def save_img(name):
 0105_long     0105_yee    0105_zizu   0106_brian  0106_chi      0106_sunny
 '''
 if __name__ == '__main__':
-    name = '0105_cin'
-    save_img(name)
+    name = ['0105_cin','0105_hsp','0105_jeff','0105_jihong','0105_long', '0105_yee', '0105_zizu', '0106_brian', '0106_chi', '0106_sunny']
+    for i in name:
+        print(i)
+        save_img(i)
 
