@@ -338,38 +338,40 @@ def main(i):
             # plt.show()            
             
             OutputCSV(Fmovingave,who)
-            data_count=0
-            PR_1024_list = [0 for i in range(1024)]
-            PR_raw=[]
-            spectrogram=[]
-            times=[]
-            PR_max=[]
-            PR_f_max_loc_f_now=0
-            PR_f_max_loc_f_pr=0
+            # #############頻譜圖#############
+            # data_count=0
+            # PR_1024_list = [0 for i in range(1024)]
+            # PR_raw=[]
+            # spectrogram=[]
+            # times=[]
+            # PR_max=[]
+            # PR_f_max_loc_f_now=0
+            # PR_f_max_loc_f_pr=0
 
-            freq=np.linspace(0.0, 10*1.0/(2.0), 512)  # 200>>>sample_rate(影片fps), 5120>>>最大???
-            while data_count<len(Fmovingave)-2:
-                data_count+=1
-                PR_raw.append(Fmovingave[data_count])
-                if len(PR_raw)>100:
-                    del PR_raw[0]
-                if data_count>2:
+            # freq=np.linspace(0.0, 10*1.0/(2.0), 512)  # 200>>>sample_rate(影片fps), 5120>>>最大???
+            # while data_count<len(Fmovingave)-2:
+            #     data_count+=1
+            #     PR_raw.append(Fmovingave[data_count])
+            #     if len(PR_raw)>100:
+            #         del PR_raw[0]
+            #     if data_count>2:
                     
-                    # PR_nor=signal_process.normalization_PR(PR_raw)
-                    PR_fir = butter_bandpass_filter(
-                                            PR_raw, 1, 3.4, 10, 4)
-                    PR_1024_list=RR_1024(PR_1024_list,PR_fir[-1])
-                    PR_fft = np.fft.fft(PR_1024_list)
-                    PR_fft_abs=abs(PR_fft)
-                    PR_f_max_loc_f_now=np.argmax(PR_fft_abs[:256])
-                    # PR_f_max_loc_f_pr=PR_f_max_loc_f_now    
-                    PR_max.append(freq[PR_f_max_loc_f_now]*60)
-                    times.append(data_count/10)
-                    spectrogram.append(PR_fft_abs[:256])
-            plt.pcolormesh(times, freq[:256]*60, np.array(spectrogram).T)  # 256>>>每次取多少去計算
-            for i in range(1,len(PR_max),1):
-                plt.plot(i/10,PR_max[i],marker='.',color='r')
-            plt.show()
+            #         # PR_nor=signal_process.normalization_PR(PR_raw)
+            #         PR_fir = butter_bandpass_filter(
+            #                                 PR_raw, 1, 3.4, 10, 4)
+            #         PR_1024_list=RR_1024(PR_1024_list,PR_fir[-1])
+            #         PR_fft = np.fft.fft(PR_1024_list)
+            #         PR_fft_abs=abs(PR_fft)
+            #         PR_f_max_loc_f_now=np.argmax(PR_fft_abs[:256])
+            #         # PR_f_max_loc_f_pr=PR_f_max_loc_f_now    
+            #         PR_max.append(freq[PR_f_max_loc_f_now]*60)
+            #         times.append(data_count/10)
+            #         spectrogram.append(PR_fft_abs[:256])
+            # plt.pcolormesh(times, freq[:256]*60, np.array(spectrogram).T)  # 256>>>每次取多少去計算
+            # for i in range(1,len(PR_max),1):
+            #     plt.plot(i/10,PR_max[i],marker='.',color='r')
+            # plt.show()
+            # #############頻譜圖#############
             break
             
         if cv2.waitKey(5) & 0xFF == 27:
