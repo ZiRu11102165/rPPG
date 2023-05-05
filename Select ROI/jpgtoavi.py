@@ -57,41 +57,45 @@ import csv
 # ################martin################
 
 ################our60to10################
-addr = 'C:/Users/USER/Desktop/MOST/slidwin_pos/roiroi/our60to10/'
+
 # print(len(subject_name))
 '''
 0104_shints   0105_cin    0105_hsp    0105_jeff   0105_jihong
 0105_long     0105_yee    0105_zizu   0106_brian  0106_chi      0106_sunny
 '''
-name = '0104_shints'
+name = '0106_sunny'
+addr = 'C:/Users/USER/Desktop/MOST/slidwin_pos/roiroi/our60to10/'+name+'/'
 # the img_dir_path is 'dataset/(subect_name)/rgb'
 img_dir_path = os.path.join(addr,)
 img_frame_individual_path = glob(os.path.join(img_dir_path, "*.jpg"))
 img_frame_individual_path.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
+# print(img_frame_individual_path)
 print(f"Total number of frames: {len(img_frame_individual_path)}")
 
-# convert all image in the img_Frame_individual_path from 1080 to 720
-for image in img_frame_individual_path:
-    img = cv2.imread(image)
-    img = cv2.resize(img, (1280, 720))
-    cv2.imwrite(image, img)
+# # convert all image in the img_Frame_individual_path from 1080 to 720
+# for image in img_frame_individual_path:
+#     img = cv2.imread(image)
+#     img = cv2.resize(img, (1280, 720))
+#     cv2.imwrite(image, img)
     
 FPS = 10
 size = (1280, 720)
-save_path = 'our60to10/'+name+'.avi'
+save_path = './our60to10/avi_10fps/'+name+'.avi'
 
 out = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'MJPG'), FPS, size)
 
 # read every image and write to video
 for img in img_frame_individual_path:
-
+    
     img1 = img.split('.')[0]
-    print(img1)
-    if img1%6==0:
+    img2 = img1.split('\\')[1]
+    img_no = int(img2)
+    if img_no%6==0:
+        print(img_no)
         frame = cv2.imread(img)
+        # print(img)
         out.write(frame)
 
-
 # release the video
-# out.release()
+out.release()
 ################our60to10################
